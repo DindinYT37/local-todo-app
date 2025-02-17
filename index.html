@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <h1>Todo App</h1>
+            <div class="view-controls">
+                <button class="view-btn active" data-view="list">List</button>
+                <button class="view-btn" data-view="calendar">Calendar</button>
+            </div>
+            <div class="categories">
+                <h2>Categories</h2>
+                <div id="list-categories" class="category-controls active">
+                    <ul id="category-list"></ul>
+                    <button id="add-category">+ Add Category</button>
+                </div>
+                <div id="calendar-categories" class="category-controls">
+                    <div class="calendar-category-item">
+                        <label>
+                            <input type="checkbox" id="check-all-categories">
+                            <span>All Categories</span>
+                        </label>
+                    </div>
+                    <ul id="category-checkbox-list"></ul>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="sort-controls">
+                    <select id="sort-select">
+                        <option value="priority">Priority</option>
+                        <option value="date">Due Date</option>
+                        <option value="category">Category</option>
+                    </select>
+                    <button id="sort-direction" class="icon-button">
+                        <i class="fas fa-sort-amount-down"></i>
+                    </button>
+                </div>
+                <button id="add-task">+ New Task</button>
+            </div>
+            
+            <div id="list-view" class="view active">
+                <div id="tasks-container"></div>
+            </div>
+            
+            <div id="calendar-view" class="view">
+                <div class="calendar-header">
+                    <button id="prev-month">&lt;</button>
+                    <h2 id="calendar-title"></h2>
+                    <button id="next-month">&gt;</button>
+                </div>
+                <div id="calendar-grid"></div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add Modal -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <h2>Add New Task</h2>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-title">Title</label>
+                    <input type="text" id="task-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-date">Due Date</label>
+                    <input type="date" id="task-date">
+                </div>
+                <div class="form-group">
+                    <label for="task-category">Category</label>
+                    <select id="task-category" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="task-priority">Priority</label>
+                    <select id="task-priority" required>
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Add Category Modal -->
+    <div class="modal" id="category-modal">
+        <div class="modal-content">
+            <h2>Add New Category</h2>
+            <form id="category-form">
+                <div class="form-group">
+                    <label for="category-name">Category Name</label>
+                    <input type="text" id="category-name" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" data-modal="category">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <button id="theme-toggle" class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+    
+    <script src="app.js"></script>
+</body>
+</html>
