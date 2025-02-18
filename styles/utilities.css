@@ -1,0 +1,76 @@
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+.task-item .task-checkbox {
+    cursor: pointer;
+    z-index: 2;
+    position: relative;
+}
+
+.task-item .task-content {
+    pointer-events: auto;
+}
+
+.category-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 2px;
+}
+
+#category-color option,
+#edit-category-color option {
+    background-color: var(--surface-color);
+    color: var(--category-blue);
+}
+
+#category-color option[value="blue"],
+#edit-category-color option[value="blue"] { color: var(--category-blue); }
+
+#category-color option[value="green"],
+#edit-category-color option[value="green"] { color: var(--category-green); }
+
+#category-color option[value="purple"],
+#edit-category-color option[value="purple"] { color: var(--category-purple); }
+
+#category-color option[value="orange"],
+#edit-category-color option[value="orange"] { color: var(--category-orange); }
+
+#category-color option[value="pink"],
+#edit-category-color option[value="pink"] { color: var(--category-pink); }
+
+#category-color option[value="teal"],
+#edit-category-color option[value="teal"] { color: var(--category-teal); }
+
+#category-color,
+#edit-category-color {
+    color: currentColor;
+}
+
+#category-color:has(option[value="blue"]:checked),
+#edit-category-color:has(option[value="blue"]:checked) { color: var(--category-blue); }
+
+#category-color:has(option[value="green"]:checked),
+#edit-category-color:has(option[value="green"]:checked) { color: var(--category-green); }
+
+#category-color:has(option[value="purple"]:checked),
+#edit-category-color:has(option[value="purple"]:checked) { color: var(--category-purple); }
+
+#category-color:has(option[value="orange"]:checked),
+#edit-category-color:has(option[value="orange"]:checked) { color: var(--category-orange); }
+
+#category-color:has(option[value="pink"]:checked),
+#edit-category-color:has(option[value="pink"]:checked) { color: var(--category-pink); }
+
+#category-color:has(option[value="teal"]:checked),
+#edit-category-color:has(option[value="teal"]:checked) { color: var(--category-teal); }

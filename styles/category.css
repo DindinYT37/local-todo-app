@@ -1,0 +1,42 @@
+.category-controls {
+    display: none;
+}
+
+.category-controls.active {
+    display: block;
+}
+
+.calendar-category-item {
+    padding: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.calendar-category-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.calendar-category-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.calendar-category-item[data-color="blue"] input[type="checkbox"] { accent-color: var(--category-blue); }
+.calendar-category-item[data-color="green"] input[type="checkbox"] { accent-color: var(--category-green); }
+.calendar-category-item[data-color="purple"] input[type="checkbox"] { accent-color: var(--category-purple); }
+.calendar-category-item[data-color="orange"] input[type="checkbox"] { accent-color: var(--category-orange); }
+.calendar-category-item[data-color="pink"] input[type="checkbox"] { accent-color: var(--category-pink); }
+.calendar-category-item[data-color="teal"] input[type="checkbox"] { accent-color: var(--category-teal); }
+
+#category-checkbox-list {
+    list-style: none;
+}
+
+#category-checkbox-list .calendar-category-item:hover {
+    background: var(--hover-bg);
+    border-radius: 4px;
+}

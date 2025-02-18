@@ -1,0 +1,78 @@
+.sidebar {
+    background: var(--sidebar-bg);
+    padding: 1.5rem;
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar h1 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: var(--primary-dark);
+}
+
+.sidebar h2 {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin: 1.5rem 0 1rem;
+}
+
+#category-list {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+#category-list li {
+    padding: 0.75rem;
+    margin-bottom: 0.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+#category-list li:hover {
+    background: var(--hover-bg);
+}
+
+#category-list li.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.category-edit {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+#category-list li:hover .category-edit {
+    opacity: 1;
+}
+
+#category-list li.active .category-edit {
+    color: white;
+}
+
+#add-category {
+    width: 100%;
+    margin-top: 0.5rem;
+    background: transparent;
+    border: 1px dashed var(--border-color);
+    color: var(--text-light);
+}
+
+#add-category:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
