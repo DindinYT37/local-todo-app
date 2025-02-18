@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
-    <link rel="stylesheet" href="styles.css">
+
+    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/calendar.css">
+    <link rel="stylesheet" href="styles/category.css">
+    <link rel="stylesheet" href="styles/editor.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/main-content.css">
+    <link rel="stylesheet" href="styles/modal.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <link rel="stylesheet" href="styles/task-items.css">
+    <link rel="stylesheet" href="styles/theme-toggle.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <link rel="stylesheet" href="styles/variables.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <nav class="sidebar">
@@ -32,7 +49,7 @@
                 </div>
             </div>
         </nav>
-        
+
         <main class="main-content">
             <div class="top-bar">
                 <div class="sort-controls">
@@ -47,11 +64,11 @@
                 </div>
                 <button id="add-task">+ New Task</button>
             </div>
-            
+
             <div id="list-view" class="view active">
                 <div id="tasks-container"></div>
             </div>
-            
+
             <div id="calendar-view" class="view">
                 <div class="calendar-header">
                     <button id="prev-month">&lt;</button>
@@ -66,7 +83,8 @@
                 <h2>Edit Task</h2>
                 <button class="close-editor"><i class="fas fa-times"></i></button>
             </div>
-            <form id="edit-task-form" onsubmit="event.preventDefault(); app.handleTaskEdit(this.closest('.task-editor'));">
+            <form id="edit-task-form"
+                onsubmit="event.preventDefault(); app.editorManager.handleTaskEdit(this.closest('.task-editor'));">
                 <div class="form-group">
                     <label for="edit-task-title">Title</label>
                     <input type="text" id="edit-task-title" required>
@@ -99,13 +117,14 @@
                 </div>
             </form>
         </aside>
-        
+
         <div id="floating-editor" class="task-editor floating">
             <div class="editor-header">
                 <h2>Edit Task</h2>
                 <button class="close-editor"><i class="fas fa-times"></i></button>
             </div>
-            <form id="floating-task-form" class="edit-task-form" onsubmit="event.preventDefault(); app.handleTaskEdit(this.closest('.task-editor'));">
+            <form id="floating-task-form" class="edit-task-form"
+                onsubmit="event.preventDefault(); app.editorManager.handleTaskEdit(this.closest('.task-editor'));">
                 <div class="form-group">
                     <label for="floating-task-title">Title</label>
                     <input type="text" id="floating-task-title" required>
@@ -139,7 +158,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Add Modal -->
     <div class="modal" id="task-modal">
         <div class="modal-content">
@@ -172,7 +191,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Add Category Modal -->
     <div class="modal" id="category-modal">
         <div class="modal-content">
@@ -200,7 +219,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Edit Category Modal -->
     <div class="modal" id="category-edit-modal">
         <div class="modal-content">
@@ -228,11 +247,12 @@
             </form>
         </div>
     </div>
-    
+
     <button id="theme-toggle" class="theme-toggle">
         <i class="fas fa-moon"></i>
     </button>
-    
-    <script src="app.js"></script>
+
+    <script type="module" src="app/main.js"></script>
 </body>
+
 </html>
