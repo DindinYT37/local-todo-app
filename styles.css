@@ -17,6 +17,16 @@
     --overlay-color: rgba(0, 0, 0, 0.5);
     --highlight-bg: #f5f5f5;
     --dim-bg: rgba(0, 0, 0, 0.02);
+    --button-bg: #f0f0f0;
+    --button-text: #333333;
+    --input-bg: #ffffff;
+    --input-text: #333333;
+    --category-blue: #2196f3;
+    --category-green: #4caf50;
+    --category-purple: #9c27b0;
+    --category-orange: #ff9800;
+    --category-pink: #e91e63;
+    --category-teal: #009688;
 }
 
 body.dark-mode {
@@ -35,6 +45,10 @@ body.dark-mode {
     --overlay-color: rgba(0, 0, 0, 0.7);
     --highlight-bg: #2d2d2d;
     --dim-bg: rgba(255, 255, 255, 0.02);
+    --button-bg: #2d2d2d;
+    --button-text: #e0e0e0;
+    --input-bg: #2d2d2d;
+    --input-text: #e0e0e0;
 }
 
 * {
@@ -87,6 +101,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    position: relative;
 }
 
 #category-list li:hover {
@@ -95,6 +110,28 @@ body {
 
 #category-list li.active {
     background: var(--primary-color);
+    color: white;
+}
+
+.category-edit {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+#category-list li:hover .category-edit {
+    opacity: 1;
+}
+
+#category-list li.active .category-edit {
     color: white;
 }
 
@@ -128,6 +165,8 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     font-weight: 500;
+    background: var(--button-bg);
+    color: var(--button-text);
 }
 
 .view-btn.active {
@@ -191,6 +230,9 @@ button {
     will-change: transform, opacity;
     position: relative;
     transform-origin: top center;
+    cursor: pointer;
+    border-left-width: 4px;
+    border-left-style: solid;
 }
 
 .task-item:hover {
@@ -214,6 +256,23 @@ button {
 .task-item.overdue {
     background: var(--overdue);
     border-left: 4px solid var(--danger);
+}
+
+.task-item[data-category-color="blue"] { border-left-color: var(--category-blue); }
+.task-item[data-category-color="green"] { border-left-color: var(--category-green); }
+.task-item[data-category-color="purple"] { border-left-color: var(--category-purple); }
+.task-item[data-category-color="orange"] { border-left-color: var(--category-orange); }
+.task-item[data-category-color="pink"] { border-left-color: var(--category-pink); }
+.task-item[data-category-color="teal"] { border-left-color: var(--category-teal); }
+
+.task-item.due-today,
+.calendar-task.due-today {
+    border-left-color: var(--warning);
+}
+
+.task-item.overdue,
+.calendar-task.overdue {
+    border-left-color: var(--danger);
 }
 
 .task-item h3 {
@@ -300,6 +359,8 @@ button {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     min-width: 150px;
+    background: var(--input-bg);
+    color: var(--input-text);
 }
 
 .sort-controls {
@@ -373,6 +434,8 @@ button {
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.2s;
+    background: var(--input-bg);
+    color: var(--input-text);
 }
 
 .form-group input:focus,
@@ -435,6 +498,21 @@ button {
 .calendar-header h2 {
     font-size: 1.5rem;
     color: var(--text-color);
+}
+
+#prev-month,
+#next-month {
+    background: var(--button-bg);
+    color: var(--button-text);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#prev-month:hover,
+#next-month:hover {
+    background: var(--hover-bg);
 }
 
 .calendar-day:hover {
@@ -518,6 +596,13 @@ button {
     color: var(--warning);
 }
 
+.calendar-task[data-category-color="blue"] { border-left: 3px solid var(--category-blue); }
+.calendar-task[data-category-color="green"] { border-left: 3px solid var(--category-green); }
+.calendar-task[data-category-color="purple"] { border-left: 3px solid var(--category-purple); }
+.calendar-task[data-category-color="orange"] { border-left: 3px solid var(--category-orange); }
+.calendar-task[data-category-color="pink"] { border-left: 3px solid var(--category-pink); }
+.calendar-task[data-category-color="teal"] { border-left: 3px solid var(--category-teal); }
+
 .more-tasks {
     font-size: 0.75rem;
     color: var(--text-light);
@@ -586,7 +671,15 @@ body.dark-mode .theme-toggle i.fa-sun {
     width: 16px;
     height: 16px;
     cursor: pointer;
+    accent-color: var(--primary-color);
 }
+
+.calendar-category-item[data-color="blue"] input[type="checkbox"] { accent-color: var(--category-blue); }
+.calendar-category-item[data-color="green"] input[type="checkbox"] { accent-color: var(--category-green); }
+.calendar-category-item[data-color="purple"] input[type="checkbox"] { accent-color: var(--category-purple); }
+.calendar-category-item[data-color="orange"] input[type="checkbox"] { accent-color: var(--category-orange); }
+.calendar-category-item[data-color="pink"] input[type="checkbox"] { accent-color: var(--category-pink); }
+.calendar-category-item[data-color="teal"] input[type="checkbox"] { accent-color: var(--category-teal); }
 
 #category-checkbox-list {
     list-style: none;
@@ -595,6 +688,184 @@ body.dark-mode .theme-toggle i.fa-sun {
 #category-checkbox-list .calendar-category-item:hover {
     background: var(--hover-bg);
     border-radius: 4px;
+}
+
+/* ...existing code... */
+
+.task-editor {
+    background: var(--surface-color);
+    border-left: 1px solid var(--border-color);
+    width: 300px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: -300px;
+    padding: 2rem;
+    transition: right 0.3s ease;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.task-editor.active {
+    right: 0;
+    box-shadow: -4px 0 8px var(--shadow-color);
+}
+
+.task-editor.floating {
+    position: fixed; /* Change from absolute to fixed for viewport-relative positioning */
+    width: 300px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    display: none;
+    max-height: calc(100vh - 40px); /* Account for margins */
+    overflow-y: auto;
+    z-index: 1000;
+    transition: none; /* Disable transition for position changes */
+}
+
+.task-editor.floating.active {
+    display: block;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.close-editor {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.close-editor:hover {
+    color: var(--text-color);
+}
+
+.editor-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #cc0000;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+/* Make task items clickable */
+.task-item .task-checkbox {
+    cursor: pointer;
+    z-index: 2;
+}
+
+.task-item .task-content {
+    pointer-events: none;
+}
+
+/* ...existing code... */
+
+/* Add category color styles */
+.category-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Update color dropdown styles */
+#category-color option,
+#edit-category-color option {
+    background-color: var(--surface-color);
+    color: var(--category-blue);
+}
+
+#category-color option[value="blue"],
+#edit-category-color option[value="blue"] { color: var(--category-blue); }
+
+#category-color option[value="green"],
+#edit-category-color option[value="green"] { color: var(--category-green); }
+
+#category-color option[value="purple"],
+#edit-category-color option[value="purple"] { color: var(--category-purple); }
+
+#category-color option[value="orange"],
+#edit-category-color option[value="orange"] { color: var(--category-orange); }
+
+#category-color option[value="pink"],
+#edit-category-color option[value="pink"] { color: var(--category-pink); }
+
+#category-color option[value="teal"],
+#edit-category-color option[value="teal"] { color: var(--category-teal); }
+
+/* Make selected option text colored in the select itself */
+#category-color,
+#edit-category-color {
+    color: currentColor;
+}
+
+#category-color:has(option[value="blue"]:checked),
+#edit-category-color:has(option[value="blue"]:checked) { color: var(--category-blue); }
+
+#category-color:has(option[value="green"]:checked),
+#edit-category-color:has(option[value="green"]:checked) { color: var(--category-green); }
+
+#category-color:has(option[value="purple"]:checked),
+#edit-category-color:has(option[value="purple"]:checked) { color: var(--category-purple); }
+
+#category-color:has(option[value="orange"]:checked),
+#edit-category-color:has(option[value="orange"]:checked) { color: var(--category-orange); }
+
+#category-color:has(option[value="pink"]:checked),
+#edit-category-color:has(option[value="pink"]:checked) { color: var(--category-pink); }
+
+#category-color:has(option[value="teal"]:checked),
+#edit-category-color:has(option[value="teal"]:checked) { color: var(--category-teal); }
+
+/* ...existing code... */
+
+.delete-confirmation {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.delete-confirmation p {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 }
 
 /* ...existing code... */

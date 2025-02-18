@@ -1,7 +1,10 @@
 class TodoApp {
     constructor() {
         this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        this.categories = JSON.parse(localStorage.getItem('categories')) || ['Personal', 'Work'];
+        this.categories = JSON.parse(localStorage.getItem('categories')) || [
+            { name: 'Personal', color: 'blue' },
+            { name: 'Work', color: 'green' }
+        ];
         this.currentView = 'list';
         this.modal = document.getElementById('task-modal');
         this.categoryModal = document.getElementById('category-modal');
@@ -9,9 +12,15 @@ class TodoApp {
         this.sortDirection = 1; // 1 for ascending, -1 for descending
         this.currentSortCriterion = 'priority';
         this.currentDate = new Date();
-        this.visibleCategories = new Set(this.categories); // Add this line
+        this.visibleCategories = new Set(this.categories.map(cat => cat.name)); // Update this line
+        this.editingTask = null;
+        this.categoryEditModal = document.getElementById('category-edit-modal');
+        this.editingCategory = null;
+        this.deleteConfirmationVisible = false;
         this.initializeApp();
         this.setupTheme();
+        this.setupEditors();
+        this.setupClickOutside();
     }
 
     initializeApp() {
@@ -64,6 +73,9 @@ class TodoApp {
                 const modalType = btn.dataset.modal;
                 if (modalType === 'category') {
                     this.categoryModal.classList.remove('active');
+                } else if (modalType === 'category-edit') {
+                    this.categoryEditModal.classList.remove('active');
+                    this.editingCategory = null;
                 } else {
                     this.modal.classList.remove('active');
                 }
@@ -79,13 +91,65 @@ class TodoApp {
             document.getElementById('sort-direction').classList.toggle('reversed');
             this.sortTasks(this.currentSortCriterion);
         });
+        document.getElementById('category-edit-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleCategoryEdit(e);
+        });
+    }
+
+    setupEditors() {
+        document.querySelectorAll('.close-editor').forEach(btn => {
+            btn.addEventListener('click', () => this.closeEditor());
+        });
+        
+        document.querySelectorAll('.edit-task-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleTaskEdit(e.target.closest('.task-editor'));
+            });
+        });
+        
+        document.getElementById('delete-task').addEventListener('click', (e) => {
+            e.preventDefault();
+            const editor = e.target.closest('.task-editor');
+            this.showDeleteConfirmation(editor, this.editingTask.title);
+        });
+
+        document.querySelector('.floating-delete-task').addEventListener('click', (e) => {
+            e.preventDefault();
+            const editor = e.target.closest('.task-editor');
+            this.showDeleteConfirmation(editor, this.editingTask.title);
+        });
+    }
+
+    setupClickOutside() {
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('task-edit-sidebar');
+            const floating = document.getElementById('floating-editor');
+            
+            // Don't close if clicking inside editors or on tasks
+            if (e.target.closest('.task-editor') || 
+                e.target.closest('.task-item') || 
+                e.target.closest('.calendar-task')) {
+                return;
+            }
+
+            // Close editors when clicking outside
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+            if (floating.classList.contains('active')) {
+                floating.classList.remove('active');
+            }
+            this.editingTask = null;
+        });
     }
 
     addTask() {
         this.modal.classList.add('active');
         const categorySelect = document.getElementById('task-category');
         categorySelect.innerHTML = this.categories.map(cat => 
-            `<option value="${cat}">${cat}</option>`
+            `<option value="${cat.name}">${cat.name}</option>`
         ).join('');
     }
 
@@ -290,6 +354,8 @@ class TodoApp {
             const taskElements = visibleTasks.map(task => `
                 <div class="calendar-task ${task.completed ? 'completed' : ''} 
                                         ${this.getTaskStatus(task.dueDate, task.completed)}"
+                     data-category-color="${this.getCategoryColor(task.category)}"
+                     onclick="app.openEditor(${task.id}, true, event); event.stopPropagation();"
                      title="${task.title}">
                     ${task.title}
                 </div>
@@ -318,13 +384,13 @@ class TodoApp {
         checkAll.checked = this.visibleCategories.size === this.categories.length;
         
         list.innerHTML = this.categories.map(cat => `
-            <li class="calendar-category-item">
+            <li class="calendar-category-item" data-color="${cat.color}">
                 <label>
                     <input type="checkbox" 
                            class="category-checkbox" 
-                           value="${cat}" 
-                           ${this.visibleCategories.has(cat) ? 'checked' : ''}>
-                    <span>${cat}</span>
+                           value="${cat.name}" 
+                           ${this.visibleCategories.has(cat.name) ? 'checked' : ''}>
+                    <span>${cat.name}</span>
                 </label>
             </li>
         `).join('');
@@ -344,7 +410,7 @@ class TodoApp {
 
         checkAll.addEventListener('change', (e) => {
             if (e.target.checked) {
-                this.visibleCategories = new Set(this.categories);
+                this.visibleCategories = new Set(this.categories.map(cat => cat.name));
             } else {
                 this.visibleCategories.clear();
             }
@@ -375,9 +441,11 @@ class TodoApp {
 
     handleCategorySubmit(e) {
         const categoryName = document.getElementById('category-name').value;
-        if (categoryName && !this.categories.includes(categoryName)) {
-            this.categories.push(categoryName);
-            this.visibleCategories.add(categoryName); // Add this line
+        const categoryColor = document.getElementById('category-color').value;
+        
+        if (categoryName && !this.categories.find(cat => cat.name === categoryName)) {
+            this.categories.push({ name: categoryName, color: categoryColor });
+            this.visibleCategories.add(categoryName);
             localStorage.setItem('categories', JSON.stringify(this.categories));
             this.renderCategories();
             if (this.currentView === 'calendar') {
@@ -401,6 +469,11 @@ class TodoApp {
         return this.tasks.filter(task => task.category === this.activeCategory);
     }
 
+    getCategoryColor(categoryName) {
+        const category = this.categories.find(cat => cat.name === categoryName);
+        return category ? category.color : 'blue'; // default to blue if not found
+    }
+
     renderTasks() {
         const container = document.getElementById('tasks-container');
         const oldItems = Array.from(container.children);
@@ -416,7 +489,10 @@ class TodoApp {
         // Last: Update DOM
         const filteredTasks = this.getFilteredTasks();
         container.innerHTML = filteredTasks.map(task => `
-            <div class="task-item ${task.completed ? 'completed' : ''} ${this.getTaskStatus(task.dueDate, task.completed)}" data-id="${task.id}">
+            <div class="task-item ${task.completed ? 'completed' : ''} ${this.getTaskStatus(task.dueDate, task.completed)}" 
+                 data-id="${task.id}"
+                 data-category-color="${this.getCategoryColor(task.category)}"
+                 onclick="app.openEditor(${task.id})">
                 <div class="priority-indicator priority-${task.priority === 3 ? 'high' : task.priority === 2 ? 'medium' : 'low'}"></div>
                 <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="app.toggleTask(${task.id})">
                     ${task.completed ? '<i class="fas fa-check"></i>' : ''}
@@ -469,6 +545,192 @@ class TodoApp {
         });
     }
 
+    openEditor(taskId, floating = false, event = null) {
+        event?.stopPropagation();
+        
+        const task = this.tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        this.editingTask = task;
+        const editor = floating ? 
+            document.getElementById('floating-editor') : 
+            document.getElementById('task-edit-sidebar');
+
+        // Close other editor if open
+        const otherEditor = floating ? 
+            document.getElementById('task-edit-sidebar') : 
+            document.getElementById('floating-editor');
+        otherEditor.classList.remove('active');
+
+        // Get correct form field IDs based on editor type
+        const prefix = floating ? 'floating-task-' : 'edit-task-';
+        
+        // Populate form fields
+        editor.querySelector(`#${prefix}title`).value = task.title;
+        editor.querySelector(`#${prefix}date`).value = task.dueDate;
+        editor.querySelector(`#${prefix}priority`).value = task.priority;
+        editor.querySelector(`#${prefix}completed`).checked = task.completed;
+
+        const categorySelect = editor.querySelector(`#${prefix}category`);
+        categorySelect.innerHTML = this.categories.map(cat => 
+            `<option value="${cat.name}" ${cat.name === task.category ? 'selected' : ''}>${cat.name}</option>`
+        ).join('');
+
+        if (floating && event) {
+            editor.style.visibility = 'hidden';
+            editor.classList.add('active');
+            
+            const editorRect = editor.getBoundingClientRect();
+            const taskRect = event.target.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const MARGIN = 20;
+
+            // Determine if there's more space to the left or right of the task
+            const spaceLeft = taskRect.left;
+            const spaceRight = viewportWidth - taskRect.right;
+            
+            // Calculate vertical position - align with task
+            let top = taskRect.top;
+            
+            // Ensure vertical position is within viewport
+            if (top + editorRect.height > viewportHeight - MARGIN) {
+                top = Math.max(MARGIN, viewportHeight - editorRect.height - MARGIN);
+            }
+            top = Math.max(MARGIN, top);
+
+            // Calculate horizontal position
+            let left;
+            if (spaceRight >= editorRect.width + MARGIN || spaceRight > spaceLeft) {
+                // Position to the right
+                left = taskRect.right + 10;
+                if (left + editorRect.width > viewportWidth - MARGIN) {
+                    left = viewportWidth - editorRect.width - MARGIN;
+                }
+            } else {
+                // Position to the left
+                left = taskRect.left - editorRect.width - 10;
+                if (left < MARGIN) {
+                    left = MARGIN;
+                }
+            }
+
+            // Apply final position and make visible
+            editor.style.left = `${left}px`;
+            editor.style.top = `${top}px`;
+            editor.style.visibility = 'visible';
+        } else {
+            editor.classList.add('active');
+        }
+
+        // Clear any existing delete confirmation
+        const existingConfirmation = editor.querySelector('.delete-confirmation');
+        if (existingConfirmation) {
+            existingConfirmation.remove();
+            editor.querySelector('.editor-actions').style.display = 'flex';
+            this.deleteConfirmationVisible = false;
+        }
+    }
+
+    closeEditor() {
+        document.querySelectorAll('.task-editor').forEach(editor => {
+            // Clear any delete confirmation when closing
+            const confirmation = editor.querySelector('.delete-confirmation');
+            if (confirmation) {
+                confirmation.remove();
+                editor.querySelector('.editor-actions').style.display = 'flex';
+                this.deleteConfirmationVisible = false;
+            }
+            editor.classList.remove('active');
+        });
+        this.editingTask = null;
+    }
+
+    handleTaskEdit(editor) {
+        if (!this.editingTask) return;
+
+        const prefix = editor.id === 'floating-editor' ? 'floating-task-' : 'edit-task-';
+        
+        const updatedTask = {
+            ...this.editingTask,
+            title: editor.querySelector(`#${prefix}title`).value,
+            dueDate: editor.querySelector(`#${prefix}date`).value,
+            category: editor.querySelector(`#${prefix}category`).value,
+            priority: parseInt(editor.querySelector(`#${prefix}priority`).value),
+            completed: editor.querySelector(`#${prefix}completed`).checked
+        };
+
+        const index = this.tasks.findIndex(t => t.id === this.editingTask.id);
+        if (index !== -1) {
+            this.tasks[index] = updatedTask;
+            this.saveTasks();
+            
+            // Always update both views regardless of current view
+            this.sortTasks(this.currentSortCriterion);
+            this.renderTasks();
+            this.renderCalendar();
+            
+            this.closeEditor();
+        }
+    }
+
+    showDeleteConfirmation(editor, taskTitle) {
+        if (this.deleteConfirmationVisible) return;
+        
+        const confirmation = document.createElement('div');
+        confirmation.className = 'delete-confirmation';
+        confirmation.innerHTML = `
+            <p>Delete "${taskTitle}"?</p>
+            <div class="confirmation-actions">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-danger">Delete</button>
+            </div>
+        `;
+
+        const editorActions = editor.querySelector('.editor-actions');
+        editorActions.style.display = 'none';
+        editor.querySelector('form').appendChild(confirmation);
+
+        this.deleteConfirmationVisible = true;
+
+        confirmation.querySelector('.btn-cancel').addEventListener('click', () => {
+            confirmation.remove();
+            editorActions.style.display = 'flex';
+            this.deleteConfirmationVisible = false;
+        });
+
+        confirmation.querySelector('.btn-danger').addEventListener('click', () => {
+            this.executeTaskDelete();
+            this.deleteConfirmationVisible = false;
+        });
+    }
+
+    executeTaskDelete() {
+        if (!this.editingTask) return;
+        
+        this.tasks = this.tasks.filter(t => t.id !== this.editingTask.id);
+        this.saveTasks();
+        this.sortTasks(this.currentSortCriterion);
+        this.renderTasks();
+        if (this.currentView === 'calendar') {
+            this.renderCalendar();
+        }
+        this.closeEditor();
+    }
+
+    deleteTask() {
+        if (!this.editingTask) return;
+
+        this.tasks = this.tasks.filter(t => t.id !== this.editingTask.id);
+        this.saveTasks();
+        this.sortTasks(this.currentSortCriterion);
+        this.renderTasks();
+        if (this.currentView === 'calendar') {
+            this.renderCalendar();
+        }
+        this.closeEditor();
+    }
+
     renderCategories() {
         const list = document.getElementById('category-list');
         list.innerHTML = `
@@ -477,12 +739,76 @@ class TodoApp {
                 <i class="fas fa-list"></i> All Tasks
             </li>
             ${this.categories.map(cat => `
-                <li class="${this.activeCategory === cat ? 'active' : ''}"
-                    onclick="app.filterByCategory('${cat}')">
-                    <i class="fas fa-tag"></i> ${cat}
+                <li class="${this.activeCategory === cat.name ? 'active' : ''}"
+                    onclick="app.filterByCategory('${cat.name}')">
+                    <span class="category-color" style="background: var(--category-${cat.color})"></span>
+                    ${cat.name}
+                    <button class="category-edit" onclick="app.editCategory('${cat.name}', event)">
+                        <i class="fas fa-pen"></i>
+                    </button>
                 </li>
             `).join('')}
         `;
+    }
+
+    editCategory(categoryName, event) {
+        event.stopPropagation();
+        const category = this.categories.find(cat => cat.name === categoryName);
+        if (!category) return;
+
+        this.editingCategory = category;
+        
+        const nameInput = document.getElementById('edit-category-name');
+        const colorSelect = document.getElementById('edit-category-color');
+        
+        nameInput.value = category.name;
+        colorSelect.value = category.color;
+        
+        this.categoryEditModal.classList.add('active');
+    }
+
+    handleCategoryEdit(e) {
+        if (!this.editingCategory) return;
+
+        const newName = document.getElementById('edit-category-name').value;
+        const newColor = document.getElementById('edit-category-color').value;
+        
+        // Update tasks with the new category name
+        if (newName !== this.editingCategory.name) {
+            this.tasks.forEach(task => {
+                if (task.category === this.editingCategory.name) {
+                    task.category = newName;
+                }
+            });
+            
+            // Update visibleCategories Set
+            if (this.visibleCategories.has(this.editingCategory.name)) {
+                this.visibleCategories.delete(this.editingCategory.name);
+                this.visibleCategories.add(newName);
+            }
+            
+            // Update activeCategory if it's the one being edited
+            if (this.activeCategory === this.editingCategory.name) {
+                this.activeCategory = newName;
+            }
+        }
+
+        // Update category
+        const index = this.categories.findIndex(cat => cat.name === this.editingCategory.name);
+        this.categories[index] = { name: newName, color: newColor };
+        
+        // Save and refresh
+        localStorage.setItem('categories', JSON.stringify(this.categories));
+        this.saveTasks();
+        this.renderCategories();
+        this.renderTasks();
+        if (this.currentView === 'calendar') {
+            this.renderCalendarCategories();
+            this.renderCalendar();
+        }
+        
+        this.categoryEditModal.classList.remove('active');
+        this.editingCategory = null;
     }
 }
 

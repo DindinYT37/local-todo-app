@@ -61,6 +61,83 @@
                 <div id="calendar-grid"></div>
             </div>
         </main>
+        <aside id="task-edit-sidebar" class="task-editor">
+            <div class="editor-header">
+                <h2>Edit Task</h2>
+                <button class="close-editor"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="edit-task-form" onsubmit="event.preventDefault(); app.handleTaskEdit(this.closest('.task-editor'));">
+                <div class="form-group">
+                    <label for="edit-task-title">Title</label>
+                    <input type="text" id="edit-task-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-date">Due Date</label>
+                    <input type="date" id="edit-task-date">
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-category">Category</label>
+                    <select id="edit-task-category" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-priority">Priority</label>
+                    <select id="edit-task-priority" required>
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="edit-task-completed">
+                        <span>Completed</span>
+                    </label>
+                </div>
+                <div class="editor-actions">
+                    <button type="button" class="btn-danger" id="delete-task">Delete Task</button>
+                    <button type="submit" class="btn-submit">Save Changes</button>
+                </div>
+            </form>
+        </aside>
+        
+        <div id="floating-editor" class="task-editor floating">
+            <div class="editor-header">
+                <h2>Edit Task</h2>
+                <button class="close-editor"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="floating-task-form" class="edit-task-form" onsubmit="event.preventDefault(); app.handleTaskEdit(this.closest('.task-editor'));">
+                <div class="form-group">
+                    <label for="floating-task-title">Title</label>
+                    <input type="text" id="floating-task-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="floating-task-date">Due Date</label>
+                    <input type="date" id="floating-task-date">
+                </div>
+                <div class="form-group">
+                    <label for="floating-task-category">Category</label>
+                    <select id="floating-task-category" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="floating-task-priority">Priority</label>
+                    <select id="floating-task-priority" required>
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="floating-task-completed">
+                        <span>Completed</span>
+                    </label>
+                </div>
+                <div class="editor-actions">
+                    <button type="button" class="btn-danger floating-delete-task">Delete Task</button>
+                    <button type="submit" class="btn-submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
     
     <!-- Add Modal -->
@@ -105,9 +182,48 @@
                     <label for="category-name">Category Name</label>
                     <input type="text" id="category-name" required>
                 </div>
+                <div class="form-group">
+                    <label for="category-color">Category Color</label>
+                    <select id="category-color" required>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="purple">Purple</option>
+                        <option value="orange">Orange</option>
+                        <option value="pink">Pink</option>
+                        <option value="teal">Teal</option>
+                    </select>
+                </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" data-modal="category">Cancel</button>
                     <button type="submit" class="btn-submit">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Category Modal -->
+    <div class="modal" id="category-edit-modal">
+        <div class="modal-content">
+            <h2>Edit Category</h2>
+            <form id="category-edit-form">
+                <div class="form-group">
+                    <label for="edit-category-name">Category Name</label>
+                    <input type="text" id="edit-category-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category-color">Category Color</label>
+                    <select id="edit-category-color" required>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="purple">Purple</option>
+                        <option value="orange">Orange</option>
+                        <option value="pink">Pink</option>
+                        <option value="teal">Teal</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" data-modal="category-edit">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Changes</button>
                 </div>
             </form>
         </div>
